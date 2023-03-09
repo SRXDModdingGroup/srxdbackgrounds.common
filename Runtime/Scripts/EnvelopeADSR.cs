@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace SRXDBackgrounds.Common {
+﻿namespace SRXDBackgrounds.Common {
     public class EnvelopeADSR {
         public float Attack { get; set; }
         
@@ -9,6 +7,14 @@ namespace SRXDBackgrounds.Common {
         public float Sustain { get; set; }
         
         public float Release { get; set; }
+        
+        public bool Invert { get; set; }
+        
+        public InterpolationType AttackInterpolationType { get; set; } = InterpolationType.Linear;
+        
+        public InterpolationType DecayInterpolationType { get; set; } = InterpolationType.Linear;
+        
+        public InterpolationType ReleaseInterpolationType { get; set; } = InterpolationType.Linear;
 
         private float phase = 2f;
         private float releasePhase = 1f;
@@ -31,13 +37,12 @@ namespace SRXDBackgrounds.Common {
             sustained = false;
         }
 
-        public float Update(float deltaTime) => Mathf.Lerp(0f, UpdateAttackDecay(deltaTime), UpdateRelease(deltaTime));
-
-        protected virtual float GetAttackValueFromPhase(float phase) => phase;
-
-        protected virtual float GetDecayValueFromPhase(float phase) => 1f - phase;
-
-        protected virtual float GetReleaseValueFromPhase(float phase) => 1f - phase;
+        public float Update(float deltaTime) {
+            if (Invert)
+                return 1f - UpdateAttackDecay(deltaTime) * UpdateRelease(deltaTime);
+            
+            return UpdateAttackDecay(deltaTime) * UpdateRelease(deltaTime);
+        }
 
         private float UpdateAttackDecay(float deltaTime) {
             if (phase < 1f) {
@@ -49,7 +54,7 @@ namespace SRXDBackgrounds.Common {
                     if (deltaTime <= remaining) {
                         phase += deltaTime / Attack;
 
-                        return GetAttackValueFromPhase(phase);
+                        return Util.GetInterpolationFactor(phase, AttackInterpolationType);
                     }
 
                     phase = 1f;
@@ -66,7 +71,7 @@ namespace SRXDBackgrounds.Common {
             phase += deltaTime / Decay;
 
             if (phase < 2f)
-                return Mathf.Lerp(Sustain, 1f, GetDecayValueFromPhase(phase - 1f));
+                return Util.Interpolate(1f, Sustain, phase - 1f, DecayInterpolationType);
             
             phase = 2f;
 
@@ -89,7 +94,7 @@ namespace SRXDBackgrounds.Common {
             releasePhase += deltaTime / Release;
 
             if (releasePhase < 1f)
-                return GetReleaseValueFromPhase(releasePhase);
+                return 1f - Util.GetInterpolationFactor(releasePhase, ReleaseInterpolationType);
             
             releasePhase = 1f;
 

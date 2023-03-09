@@ -9,6 +9,10 @@ namespace SRXDBackgrounds.Common {
             set => Speed = 1f / value;
         }
         
+        public bool Invert { get; set; }
+
+        public InterpolationType InterpolationType { get; set; } = InterpolationType.Linear;
+        
         private float phase = 1f;
         
         public void Trigger() => phase = 0f;
@@ -17,10 +21,11 @@ namespace SRXDBackgrounds.Common {
 
         public float Update(float deltaTime) {
             phase = Mathf.Min(phase + Speed * deltaTime, 1f);
+            
+            if (Invert)
+                return 1f - Util.GetInterpolationFactor(phase, InterpolationType);
 
-            return GetValueFromPhase(phase);
+            return Util.GetInterpolationFactor(phase, InterpolationType);
         }
-
-        protected virtual float GetValueFromPhase(float phase) => phase;
     }
 }
