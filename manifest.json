@@ -1,0 +1,7 @@
+{
+  "name": "srxdbackgrounds.common",
+  "description": "Common scripts for use in custom SRXD backgrounds",
+  "version": "1.0.1",
+  "repository": "SRXDModdingGroup/srxdbackgrounds.common",
+  "dependencies": []
+}
