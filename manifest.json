@@ -1,7 +1,13 @@
 {
   "name": "srxdbackgrounds.common",
   "description": "Common scripts for use in custom SRXD backgrounds",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "repository": "SRXDModdingGroup/srxdbackgrounds.common",
-  "dependencies": []
+  "dependencies": [
+    {
+      "name": "SRXDCustomVisuals",
+      "version": "1.2.5",
+      "repository": "SRXDModdingGroup/SRXDCustomVisuals"
+    }
+  ]
 }
